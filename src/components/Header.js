@@ -3,13 +3,16 @@ import Image from 'next/image'
 import logo from '../../public/Images/logo.png'
 import { HiPencilSquare } from "react-icons/hi2";
 import { FiLogIn } from "react-icons/fi";
-
+import { CiLogout } from "react-icons/ci";
+import { useSession, signIn, signOut } from "next-auth/react"
 
 const Header = () => {
-    const USER_IMAGE = 'https://picsum.photos/id/1/200/300'
+    const { data: session } = useSession()
+
+    // const USER_IMAGE = 'https://picsum.photos/id/1/200/300'
     return (
         <div className='flex justify-between p-4 border-b-2 border-blue-500'>
-            <Image src={logo} alt='logo' width={145} />
+            <Image src={logo} alt='logo' className='w-[145px]' />
 
             <div className='flex gap-5 '>
 
@@ -18,12 +21,28 @@ const Header = () => {
                     <HiPencilSquare className='sm:hidden block' />
                 </button>
 
-                <button className='p-3 bg-gray-200 text-gray-700 rounded-full'>
-                    <span className='sm:block hidden'>SIGN IN</span>
-                    <FiLogIn className='sm:hidden block' />
+                <button
+                    className='p-3 bg-gray-200 text-gray-700 rounded-full'
+                >
+                    {
+                        !session ?
+                            <span onClick={() => signIn()} className='sm:block hidden'>SIGN IN</span>
+                            :
+                            <span onClick={() => signOut()} className='sm:block hidden'>SIGN OUT</span>
+                    }
+                    {
+                        !session ?
+                            <FiLogIn onClick={() => signIn()} className='Login sm:hidden block' />
+                            :
+                            <CiLogout onClick={() => signOut()} className='Logout sm:hidden block' />
+                    }
                 </button>
 
-                <Image className='rounded-full' src={USER_IMAGE} alt='logo' width={40} height={40} />
+                {session ?
+                    <Image className='rounded-full' src={session.user.image} alt='logo' width={40} height={40} />
+                    :
+                    null
+                }
             </div>
         </div>
     );
