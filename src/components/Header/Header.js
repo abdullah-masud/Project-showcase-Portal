@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image'
-import logo from '../../public/Images/logo.png'
+import logo from '../../../public/Images/logo.png'
 import { HiPencilSquare } from "react-icons/hi2";
 import { FiLogIn } from "react-icons/fi";
 import { CiLogout } from "react-icons/ci";
@@ -9,7 +9,6 @@ import { useRouter } from 'next/router';
 
 const Header = () => {
     const { data: session } = useSession()
-
     const router = useRouter()
 
     // const USER_IMAGE = 'https://picsum.photos/id/1/200/300'
@@ -45,7 +44,9 @@ const Header = () => {
                 </button>
 
                 {session ?
-                    <Image className='rounded-full' src={session.user.image} alt='logo' width={40} height={40} />
+                    <Image
+                        onClick={() => router.push('/profile')}
+                        className='rounded-full cursor-pointer' src={session.user.image} alt='logo' width={40} height={40} />
                     :
                     null
                 }

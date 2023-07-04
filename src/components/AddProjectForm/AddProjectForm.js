@@ -5,8 +5,9 @@ import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import app from '../../Shared/firebase.init'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Loader from '../Loader';
+import Loader from '../../components/Loader/Loader';
 import { useRouter } from 'next/router';
+import { useSession } from 'next-auth/react';
 
 const AddProjectForm = () => {
     const [inputData, setInputData] = useState({});
@@ -16,11 +17,28 @@ const AddProjectForm = () => {
     const [loader, setLoader] = useState(false)
     const [docId, setDocId] = useState(Date.now().toString());
 
+    const { data: session } = useSession()
     const db = getFirestore(app);
     const storage = getStorage(app);
     const router = useRouter();
-
     const notify = () => toast("Successfully Uploaded To Firestore");
+
+    useEffect(() => {
+        if (session) {
+            setInputData((values) => ({
+                ...values,
+                userName: session.user?.name,
+            }));
+            setInputData((values) => ({
+                ...values,
+                userImage: session.user?.image,
+            }));
+            setInputData((values) => ({
+                ...values,
+                userEmail: session.user?.email,
+            }));
+        }
+    }, [session]);
 
     const handleChange = (e) => {
         const name = e.target.name;
@@ -74,7 +92,7 @@ const AddProjectForm = () => {
         await setDoc(doc(db, "Projects", docId), inputData);
         setLoader(false)
         notify()
-
+        router.push('/profile')
     }
 
     return (
